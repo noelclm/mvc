@@ -15,7 +15,7 @@
  */
 
 CREATE DATABASE IF NOT EXISTS mvc CHARACTER SET utf8 COLLATE utf8_general_ci;
-CREATE USER 'mvc'@'localhost' IDENTIFIED VIA mysql_native_password USING '53Fej6fds';
+CREATE USER 'mvc'@'localhost' IDENTIFIED VIA mysql_native_password USING 'password';
 GRANT USAGE ON *.* TO 'mvc'@'localhost' REQUIRE NONE WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0;
 GRANT ALL PRIVILEGES ON `mvc`.* TO 'mvc'@'localhost' WITH GRANT OPTION;
 
@@ -60,4 +60,5 @@ CREATE TABLE IF NOT EXISTS `routes` (
 )ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci AUTO_INCREMENT = 1;
 
 INSERT INTO routes (`page`,`controller`,`function`,`funcionality`) VALUES
+('/login','homeController','login',null),
 ('/home','homeController','home',null);

@@ -19,11 +19,25 @@
 class homeController extends controller {
 
     /**
+     * Página login
+     */
+    public function login(){
+        
+        if($_SESSION['login'] == true){
+            header('Location: home');
+        }
+        
+        $this->view("login");
+        
+    }
+    
+    /**
      * Página principal
      */
     public function home(){
         
-        $this->view("home",['login' => $_SESSION['login']]);
+        $this->isLogin(true); // Si no esta registrado te saca de a la pantalla de login
+        $this->view("home");
         
     }
 

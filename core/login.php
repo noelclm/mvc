@@ -18,11 +18,13 @@
 
 class Login {
 
+    private $db;
     /**
      * Constructor
      */
     function __construct (){
-
+        
+        $this->db = new dataAccess();
         session_start();
         session_regenerate_id(true);
 
@@ -36,46 +38,38 @@ class Login {
      *  1002 = Usuario o contraseña incorrecta 
      *  1003 = Ha hecho logout 
      *  1004 = Sesion expirada
-     *  1005 = No esta logueado
      *
      * @return int Codigo mensaje 
      */
     public function check (){
 
-        if(!isset($_SESSION['login'])){ 
-            $_SESSION['login'] = false; 
-            return 1005;
-        }
+        $code = 1000;
+        if(!isset($_SESSION['login'])){ $_SESSION['login'] = false; } 
 
-        // Borra las sesiones que han caducado
-        $this->deleteOldSession();
+        $this->deleteOldSession(); // Borra las sesiones que han caducado
 
         // Si ha pulsado en logout
         if(((isset($_GET['logout']) && $_GET['logout'] == true) || (isset($_POST['logout']) && $_POST['logout'] == true)) && (isset($_SESSION['login']) && $_SESSION['login'] == true)){
-            $this->logout();
-            return 1003;
-        }
-
-        // Si no esta logeado comprueba las cookies
-        if (!$_SESSION['login']) { $this->checkCookie(); } 
-        else { // Si esta logueado mira si ha expirado la sesion
-            if(!$this->chekSesion()){ return 1004; } 
-        }
-        
-        // Si se acaba de loguear
-        if(isset($_POST['login']) && $_POST['login'] == true && isset($_POST['user']) && isset($_POST['password'])){
-            
+            $code = $this->logout();
+        } // Si se acaba de loguear 
+        elseif(isset($_POST['login']) && $_POST['login'] == true && isset($_POST['user']) && isset($_POST['password'])){
             // Si no esta marcado para que se guarde la sesion
             if(!isset($_POST['save'])){ $_POST['save'] = false; }
-
-            if($this->login(escapeCode($_POST['user']),escapeCode($_POST['password']),$_POST['save'])){ return 1001; }
-            else{ return 1002; }
-            
-            unset($_POST);
-
+            $code =$this->login(escapeCode($_POST['user']),escapeCode($_POST['password']),$_POST['save']);
+        } else {
+            // Si no esta logeado comprueba las cookies
+            if (!$_SESSION['login']) { $this->checkCookie(); } 
+            // Si esta logueado mira si ha expirado la sesion
+            if($_SESSION['login']){
+                if(!$this->chekSesion()){ $code = 1004; }
+                else { $this->setCookies(); }// Renueva las cookies
+            }
         }
 
-        return 1000;
+        $this->db->close();
+        unset($this->db);
+        
+        return $code;
 
     } 
 
@@ -86,10 +80,7 @@ class Login {
     private function deleteOldSession (){
         
         if(IDLE_TIME > 0 && isset($_COOKIE["save"])){
-            $bd = new dataAccess();
-            $bd->execute("DELETE FROM session WHERE last_active + ". IDLE_TIME ." < " . time() . ";");
-            $bd->close();
-            unset($bd);
+            $this->db->execute("DELETE FROM session WHERE last_active + ". IDLE_TIME ." < " . time() . ";");
         }
 
     } 
@@ -99,20 +90,18 @@ class Login {
      *
      */
     private function checkCookie (){
-
+        
         if(isset($_COOKIE["user_id"]) && isset($_COOKIE["key"]) && isset($_COOKIE["login"]) && isset($_COOKIE["ip"]) && isset($_COOKIE["user"]) && isset($_COOKIE["name"])){
             
-            $bd = new dataAccess();
-            $execute = $bd->execute("SELECT * FROM `session` WHERE `ip` = '".$_COOKIE['ip']."' AND `IDUsuario` = ".$_COOKIE['user_id']." AND `key` = '".$_COOKIE['key']."';");
-            
+            $execute = $this->db->execute("SELECT * FROM `session` WHERE `ip` = '".$_COOKIE['ip']."' AND `user_id` = ".$_COOKIE['user_id']." AND `key` = '".$_COOKIE['key']."';");
+            $result = [];
             if ($execute) {
-                while(($row = $bd->nextRow()) !== false){
+                while(($row = $this->db->nextRow()) !== false){
                     $result[] = $row;
                 }
             }
             
             if(count($result)){
-
                 $_SESSION['name'] = $_COOKIE['name'];
                 $_SESSION['user'] = $_COOKIE['user'];
                 $_SESSION['user_id'] = $_COOKIE['user_id'];
@@ -120,11 +109,7 @@ class Login {
                 $_SESSION['ip'] = $_COOKIE['ip'];
                 $_SESSION['last_activity'] = $_SERVER['REQUEST_TIME'];
                 $_SESSION['login'] = $_COOKIE['login'];
-
             }
-            
-            $bd->close();
-            unset($bd);
 
         }
 
@@ -137,11 +122,10 @@ class Login {
      */
     private function chekSesion (){
 
-        $bd = new dataAccess();
-        $execute = $bd->execute("SELECT * FROM `session` WHERE `key` = '".$_SESSION['key']."';");
+        $execute = $this->db->execute("SELECT * FROM `session` WHERE `key` = '".$_SESSION['key']."';");
 
         if ($execute) {
-            while(($row = $bd->nextRow()) !== false){
+            while(($row = $this->db->nextRow()) !== false){
                 $result[] = $row;
             }
         }
@@ -151,18 +135,12 @@ class Login {
             $result = $result[0];
 
             if($result['user_id'] == $_SESSION['user_id'] && $result['ip'] == $_SESSION['ip']){
-
-                $bd->execute("UPDATE session SET `last_active` = ".$_SERVER['REQUEST_TIME']." WHERE `key` = '".$_SESSION['key']."';");
-                $bd->close();
-                unset($bd);
+                $this->db->execute("UPDATE session SET `last_active` = ".$_SERVER['REQUEST_TIME']." WHERE `key` = '".$_SESSION['key']."';");
                 return true;
-
             }
             
         } 
         
-        $bd->close();
-        unset($bd);
         logout();
         return false;
 
@@ -178,14 +156,9 @@ class Login {
      */
     private function logIn ($name, $psw, $save){
 
-        $bd = new dataAccess();
-        $execute = $bd->execute("SELECT * FROM user WHERE user = '".$name."' ;");
+        $execute = $this->db->execute("SELECT * FROM user WHERE user = '".$name."' ;");
         
-        if ($execute) {
-            while(($row = $bd->nextRow()) !== false){
-                $result[] = $row;
-            }
-        }
+        if ($execute) {while(($row = $this->db->nextRow()) !== false){$result[] = $row;}}
                 
         if(count($result) == 1){
 
@@ -198,33 +171,21 @@ class Login {
                 $_SESSION['ip'] = $this->clientIp();
                 $_SESSION['last_active'] = $_SERVER['REQUEST_TIME'];
                 $_SESSION['login'] = true;
-
-                if($save){
-                    setcookie("name", $_SESSION['name'], time()+(TIEMPO_LOGIN));
-                    setcookie("user", $_SESSION['user'], time()+(TIEMPO_LOGIN));
-                    setcookie("user_id", $_SESSION['user_id'] , time()+(TIEMPO_LOGIN));
-                    setcookie("key", $_SESSION['key'], time()+(TIEMPO_LOGIN));
-                    setcookie("ip", $_SESSION['ip'], time()+(TIEMPO_LOGIN));
-                    setcookie("login", $_SESSION['login'], time()+(TIEMPO_LOGIN));
-                } 
                 
+                if($save){ $this->setCookies(); } 
                 // Si no deja varias sesiones a la vez por usuario borra las anteriores
-                if(!MULTIPLE_SESSIONS){
-                    $bd->execute("DELETE FROM `session` WHERE `user_id` = '".$_SESSION['user_id']."';");
-                }
+                if(!MULTIPLE_SESSIONS){ $this->db->execute("DELETE FROM `session` WHERE `user_id` = '".$_SESSION['user_id']."';");}
+ 
+                $this->db->execute("INSERT INTO `session` (`user_id`,`key`,`last_active`,`ip`) VALUES (".$_SESSION['user_id'].",'".$_SESSION['key']."',".$_SESSION['last_active'].",'".$_SESSION['ip']."');");
 
-                $bd->execute("INSERT INTO `session` (`user_id`,`key`,`last_active`,`ip`) VALUES (".$_SESSION['user_id'].",'".$_SESSION['key']."',".$_SESSION['last_active'].",'".$_SESSION['ip']."');");
-                $bd->close();
-                unset($bd); 
-                return true;
+                return 1001;
                 
             } 
 
         } 
-
-        $bd->close();
-        unset($bd);
-        return false;
+        
+        unset($_POST);
+        return 1002;
         
     } 
 
@@ -237,19 +198,23 @@ class Login {
         unset($_POST);
         unset($_GET);
             
-        if(isset($_SESSION['key'])){
-            $bd = new dataAccess();
-            $bd->execute("DELETE FROM `sesion` WHERE `key` = '".$_SESSION['key']."';");
-            $bd->close();
-            unset($bd); 
-        }
+        if(isset($_SESSION['key'])){ $this->db->execute("DELETE FROM `sesion` WHERE `key` = '".$_SESSION['key']."';"); }
 
         session_unset();
         session_destroy();
         session_start();
         session_regenerate_id(true);
         $_SESSION['login'] = false;
+        
+        setcookie("name", $_SESSION['name'], -3600);
+        setcookie("user", $_SESSION['user'], -3600);
+        setcookie("user_id", $_SESSION['user_id'] , -3600);
+        setcookie("key", $_SESSION['key'], -3600);
+        setcookie("ip", $_SESSION['ip'], -3600);
+        setcookie("login", $_SESSION['login'], -3600);
 
+        return 1003;
+        
     }
 
     /**
@@ -259,16 +224,27 @@ class Login {
      */
     private function clientIp (){
 
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])){
-            return $_SERVER['HTTP_CLIENT_IP'];
-        }
-
-        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
-            return $_SERVER['HTTP_X_FORWARDED_FOR'];
-        }
-
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])){ return $_SERVER['HTTP_CLIENT_IP']; }
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){ return $_SERVER['HTTP_X_FORWARDED_FOR']; }
         return $_SERVER['REMOTE_ADDR'];
 
+    } 
+    
+    /**
+     * Establece las cookies
+     *
+     */
+    private function setCookies (){
+        
+        $_SESSION['last_active'] = $_SERVER['REQUEST_TIME'];
+        
+        setcookie("name", $_SESSION['name'], time()+(IDLE_TIME));
+        setcookie("user", $_SESSION['user'], time()+(IDLE_TIME));
+        setcookie("user_id", $_SESSION['user_id'] , time()+(IDLE_TIME));
+        setcookie("key", $_SESSION['key'], time()+(IDLE_TIME));
+        setcookie("ip", $_SESSION['ip'], time()+(IDLE_TIME));
+        setcookie("login", $_SESSION['login'], time()+(IDLE_TIME));
+        
     } 
 
 } 

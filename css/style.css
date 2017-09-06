@@ -1,0 +1,96 @@
+/**
+ * Copyright 2017 Noel Clemente
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+body, html{
+    height: 100%;
+    font-family: 'Oxygen', sans-serif;
+    background: #efefef;
+}
+
+.login{
+    margin:50px 15px;
+}
+
+.main-login{
+    /* shadows and rounded borders */
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    margin-top: 30px;
+    margin: 0 auto;
+    max-width: 400px;
+    padding: 10px 40px;
+    background:#fff;
+    color: #3b3b3b;
+    text-shadow: none;
+    -webkit-box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.31);
+    -moz-box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.31);
+    box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.31);
+
+}
+
+.form-login{
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.form-group{
+    margin-bottom: 15px;
+}
+
+.input-group {
+    -webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.21)!important;
+    -moz-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.21)!important;
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.21)!important;
+}
+
+.input-group-addon i {
+    color: #3d3d3d;
+    font-size: 17px;
+}
+
+.form-control {
+    height: auto!important;
+    padding: 8px 12px !important;
+}
+
+.form-button{
+    -moz-box-shadow:inset 0px 34px 0px -15px #ffffff;
+    -webkit-box-shadow:inset 0px 34px 0px -15px #ffffff;
+    box-shadow:inset 0px 34px 0px -15px #ffffff;
+    background-color:#ffffff;
+    border:1px solid #c9c9c9;
+    display:inline-block;
+    cursor:pointer;
+    color:#3d3d3d;
+    font-family:Arial;
+    font-size:15px;
+    font-weight:bold;
+    padding:5px 23px;
+    text-decoration:none;
+    text-shadow:0px -1px 0px #ffffff;
+    float: right;
+}
+
+.form-button:hover {
+    background-color:#ffffff;
+}
+
+.form-button:active {
+    position:relative;
+    top:1px;
+}
+

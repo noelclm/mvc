@@ -26,5 +26,5 @@ define("PERSISTENT", false);
 
 // Parameters
 define("IDLE_TIME", 604800); // Seconds (1 Day = 86400, 1 Week = 604800, Infinite = 0)
-define("DEFAULT_ROUTE", "/home");
+define("DEFAULT_ROUTE", "/login");
 define("MULTIPLE_SESSIONS", false);

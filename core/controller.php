@@ -43,10 +43,10 @@ class controller{
     /**
      * Carga la vista del controlador
      * 
-     * @param type $vista
-     * @param type $datos
+     * @param string $vista
+     * @param array $datos
      */
-    public function view($vista,$datos){
+    public function view($vista, $datos = []){
         
         foreach ($datos as $id_assoc => $valor) {
             ${$id_assoc}=$valor; 
@@ -58,14 +58,26 @@ class controller{
     /**
      * Devuelve el parametro que ha recibido por get y post
      * 
-     * @param type $param
-     * @return type
+     * @param string $param
+     * @return mixed
      */
     public function get($param){
         
         return $this->params[$param];
         
     }
-            
+    
+    /**
+     * Redirige a la pagina de login si no esta registrado
+     * 
+     * @param boolena $login
+     */
+    public function isLogin($login){
+        
+        if($_SESSION['login'] != $login){
+            header('Location: login');
+        }
+        
+    }
 
 }

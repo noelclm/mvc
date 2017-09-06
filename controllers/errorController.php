@@ -16,18 +16,18 @@
  * limitations under the License.
  */
 
-class errorController {
-
-    function __construct() {
-        
-    }
+class errorController extends controller {
     
     public function unavailable(){
-        print_r("Servicio temporalmente no disponible");
+        $this->view("error",['code' => "503", 'text' => "Servicio temporalmente no disponible"]);
     }
     
     public function pageNotFound(){
-        print_r("404");
+        $this->view("error",['code' => "404", 'text' => "Página no encontrada"]);
     }
 
+    public function forbidden(){
+        $this->view("error",['code' => "403", 'text' => "Usted no tiene permiso para acceder"]);
+    }
+    
 }
