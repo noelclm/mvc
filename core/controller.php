@@ -22,7 +22,7 @@ class controller{
      * Parametros pasados por GET y POST
      * @var array 
      */
-    private $params;
+    protected $params;
 
     /**
      * Constructor del controlador
@@ -34,7 +34,7 @@ class controller{
         $this->params = $params;
         
         //Incluir todos los modelos
-        foreach(glob("model/*.php") as $file){
+        foreach(glob("models/*.php") as $file){
             require_once $file;
         }
         
@@ -46,7 +46,7 @@ class controller{
      * @param string $vista
      * @param array $datos
      */
-    public function view($vista, $datos = []){
+    protected function view($vista, $datos = []){
         
         foreach ($datos as $id_assoc => $valor) {
             ${$id_assoc}=$valor; 
@@ -61,21 +61,24 @@ class controller{
      * @param string $param
      * @return mixed
      */
-    public function get($param){
+    protected function get($param){
         
         return $this->params[$param];
         
     }
     
     /**
-     * Redirige a la pagina de login si no esta registrado
+     * Comprueba que tenga la funcionalidad
      * 
-     * @param boolena $login
+     * @param boolena $funcionality
+     * @return boolena 
      */
-    public function isLogin($login){
+    protected function havePermissions($funcionality){
         
-        if($_SESSION['login'] != $login){
-            header('Location: login');
+        if(in_array($funcionality, $_SESSION['funcionality'])){
+            return true;
+        }else{
+            return false;
         }
         
     }

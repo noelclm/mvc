@@ -21,15 +21,5 @@ require_once 'core/functions.php';
 require_once 'core/bbdd.php';
 require_once 'core/controller.php';
 require_once 'core/model.php';
-require_once 'core/login.php';
  
-$route = DEFAULT_ROUTE;
-$params = array_merge($_GET,$_POST);
-$uri = $_SERVER['REQUEST_URI'];
-
-if($uri != "/"){
-    if (strpos("?", $uri)) { $route = iconv_substr($uri, 0, strpos($uri, "?")); } 
-    else { $route = $uri; }
-}
-
-executeAccion($route,$params);
+ini();

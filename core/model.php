@@ -28,20 +28,20 @@ class model{
      * @param string $sql Select que se quiere lanzar
      * @return array Array con las lineas devueltas
      */
-    public function selectSQL ($sql){
+    protected function selectSQL ($sql){
 
         $result = [];
-        $bd = new dataAccess();
-        $execute = $bd->execute($sql);
+        $db = new dataAccess();
+        $execute = $db->execute($sql);
 
         if ($execute) {
-            while(($row = $bd->nextRow()) !== false){
+            while(($row = $db->nextRow()) !== false){
                 $result[] = $row;
             }
         }
 
-        $bd->close();
-        unset($bd);
+        $db->close();
+        unset($db);
 
         return $result;
 
@@ -53,13 +53,13 @@ class model{
      * @param string $sql Update que se quiere lanzar
      * @return boolean True si se ha realizado, false en caso contrario
      */
-    public function updateSQL ($sql){
+    protected function updateSQL ($sql){
 
-        $bd = new dataAccess();
-        $result = $bd->execute($sql);
+        $db = new dataAccess();
+        $result = $db->execute($sql);
 
-        $bd->close();
-        unset($bd);
+        $db->close();
+        unset($db);
 
         return $result;
 
@@ -71,18 +71,18 @@ class model{
      * @param string $sql Insert que se quiere lanzar
      * @return mixe ID del dato insertado si se ha realizado, false en caso contrario
      */
-    public function insertSQL ($sql){
+    protected function insertSQL ($sql){
 
-        $bd = new dataAccess();
+        $db = new dataAccess();
 
-        if($bd->execute($sql)){
-            $result = $bd->lastId();
+        if($db->execute($sql)){
+            $result = $db->lastId();
         }else{
             $result = false;
         }
 
-        $bd->close();
-        unset($bd);
+        $db->close();
+        unset($db);
 
         return $result;
 
@@ -94,13 +94,13 @@ class model{
      * @param string $sql Delete que se quiere lanzar
      * @return boolean True si se ha realizado, false en caso contrario
      */
-    public function deleteSQL ($sql){
+    protected function deleteSQL ($sql){
 
-        $bd = new dataAccess();
-        $result = $bd->execute($sql);
+        $db = new dataAccess();
+        $result = $db->execute($sql);
 
-        $bd->close();
-        unset($bd);
+        $db->close();
+        unset($db);
 
         return $result;
 

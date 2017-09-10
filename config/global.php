@@ -19,12 +19,12 @@
 // BBDD
 define("SERVER_CONNECTION", "localhost");
 define("USER_CONNECTION", "mvc");
-define("PSW_CONNECTION", "53Fej6fds");
+define("PSW_CONNECTION", "password");
 define("BBDD_CONNECTION", "mvc");
 define("ENCODING", "utf8");
 define("PERSISTENT", false);
 
 // Parameters
-define("IDLE_TIME", 604800); // Seconds (1 Day = 86400, 1 Week = 604800, Infinite = 0)
-define("DEFAULT_ROUTE", "/login");
-define("MULTIPLE_SESSIONS", false);
+define("IDLE_TIME", 604800); // Seconds (1 Day = 86400, 1 Week = 604800, Infinite = -1)
+define("DEFAULT_ROUTE", "/signin");
+define("MULTIPLE_SESSIONS", true);

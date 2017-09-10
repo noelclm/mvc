@@ -30,4 +30,6 @@ class errorController extends controller {
         $this->view("error",['code' => "403", 'text' => "Usted no tiene permiso para acceder"]);
     }
     
+
+    
 }

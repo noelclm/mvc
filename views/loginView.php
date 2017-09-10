@@ -2,8 +2,9 @@
 
 <div class="container">
     <div class="row login">
-        <div class="main-login main-center">
-            <form action="home" method="post" class="form-login">
+        <div class="main-login">
+            <span style="color:<?php echo $message_color; ?>"><?php echo $message; ?></span>
+            <form action="login" method="post" class="form-login">
                 <div class="form-group">
                     <div class="cols-sm-10">
                         <div class="input-group">
@@ -23,7 +24,6 @@
                 <div class="form-check">
                     <input type="checkbox" value="true" name="save"> No cerrar sesión
                 </div>
-                <input type="hidden" name="login" value=true>
                 <button class="form-button" type="submit" class="btn btn-primary">Entrar</button>
             </form>
         </div>    
