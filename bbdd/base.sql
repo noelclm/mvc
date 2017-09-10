@@ -70,6 +70,7 @@ INSERT INTO routes (`page`,`controller`,`function`,`funcionality`) VALUES
 ('/503','errorController','unavailable',null),
 ('/404','errorController','pageNotFound',null),
 ('/403','errorController','forbidden',null),
+('/signin','homeController','sign_in','home'),
 ('/logout','loginController','logout',null),
 ('/login','loginController','login',null),
 ('/home','homeController','home','home');
